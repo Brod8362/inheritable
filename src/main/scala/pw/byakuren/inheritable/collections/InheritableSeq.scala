@@ -34,7 +34,7 @@ class InheritableSeq[T](start: Seq[Inheritable[T]]) extends Inheritable[T] {
           case Some(g) => f++=Seq(g)
           case None =>
             //this case should not happen, it means the element is either a sequence (meaning it should go to the 'else'
-            //block just below this one) it that it is incorrectly implemented
+            //block just below this one) or that it is incorrectly implemented
             throw new ImpossibleInheritanceException("element failed to unapply")
         }
       }

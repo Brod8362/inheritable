@@ -15,7 +15,11 @@ trait Inheritable[T] {
    * @param o Object to check inheritance with.
    */
   def inherits(o: Inheritable[T]): Boolean = {
-    flatTree.contains(o)
+    val ft = flatTree
+    directlyInherits(o) || flatTree.contains(o) || (o.unapply  match {
+      case Some(uw) => ft.contains(uw)
+      case _ => false
+    })
   }
 
   /**

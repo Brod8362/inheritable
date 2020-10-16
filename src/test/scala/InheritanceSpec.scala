@@ -49,5 +49,39 @@ class InheritanceSpec extends AnyFlatSpec {
     assert(test.toString == "[1,2,3,[4]]")
     test2.append(Inheritable(5))
     assert(test.toString == "[1,2,3,[4,5]]")
+    assert(test2.toString == "[4,5]")
+  }
+  it should "correctly determine if an object inherits it" in {
+    val four = Inheritable(4)
+    val test = new InheritableSeq[Int](Seq(four, Inheritable(5)))
+    val test2 = new InheritableSeq[Int](Seq(Inheritable(1), Inheritable(2), Inheritable(3)))
+    test2.append(test)
+    assert(test2.directlyInherits(test))
+    assert(test2.inherits(test))
+
+    assert(!test.inherits(test2))
+    assert(!test.directlyInherits(test2))
+
+    assert(test.directlyInherits(four))
+    assert(test.inherits(four))
+
+    assert(!test2.directlyInherits(four))
+    assert(test2.inherits(four))
+  }
+  it should "respond accordingly when components are updated" in {
+    val one = Inheritable(1)
+    val two = Inheritable(2)
+    val three = Inheritable(3)
+    val test = new InheritableSeq[Int](Seq(one, two))
+    val test2 = new InheritableSeq[Int](Seq(three, Inheritable(4)))
+    assert(test.flatTree==Seq(1,2))
+    assert(test2.flatTree==Seq(3,4))
+    test.append(test2)
+    assert(test.flatTree==Seq(1,2,3,4))
+    assert(test.inheritanceTree==Seq(one, two, test2))
+    test2.remove(1)
+    assert(test.inheritanceTree==Seq(one, two, test2))
+    assert(test.flatTree==Seq(1,2,3))
+    assert(test.inherits(three))
   }
 }
