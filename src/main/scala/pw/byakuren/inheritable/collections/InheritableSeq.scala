@@ -48,7 +48,7 @@ class InheritableSeq[T](start: Seq[Inheritable[T]]) extends Inheritable[T] {
   }
 
   def append(e: Inheritable[T]): Unit = {
-    seq=seq.prepended(e)
+    seq=seq.appended(e)
   }
 
   def remove(i: Int): Unit = {
@@ -65,5 +65,9 @@ class InheritableSeq[T](start: Seq[Inheritable[T]]) extends Inheritable[T] {
 
   def prepend(e: Inheritable[T]): Unit = {
     seq=seq.prepended(e)
+  }
+
+  override def toString: String = {
+    inheritanceTree.mkString("[", ",", "]")
   }
 }

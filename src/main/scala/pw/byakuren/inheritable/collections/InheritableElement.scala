@@ -28,4 +28,8 @@ class InheritableElement[T](obj: T) extends Inheritable[T] {
   override def unapply: Option[T] = {
     Some(obj)
   }
+
+  override def toString: String = {
+    obj.toString
+  }
 }
