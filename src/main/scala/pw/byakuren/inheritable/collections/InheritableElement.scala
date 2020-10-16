@@ -22,8 +22,9 @@ class InheritableElement[T](obj: T) extends Inheritable[T] {
   }
 
   /**
-   *
-   * @return
+   * 'Unwrap' the inheritable to get the object contained within. In the case of a single object,
+   * return Some(). If the object is a Sequence, or this method otherwise does not apply, return None.
+   * @return Some() if the object can be unwrapped, None otherwise.
    */
   override def unapply: Option[T] = {
     Some(obj)

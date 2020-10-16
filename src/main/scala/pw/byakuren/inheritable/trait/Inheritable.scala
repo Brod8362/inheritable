@@ -1,11 +1,11 @@
 package pw.byakuren.inheritable.`trait`
 
-import pw.byakuren.inheritable.collections.InheritableElement
+import pw.byakuren.inheritable.collections.{InheritableElement, InheritableSeq}
 
 /**
  * A class that can be inherited by another object, and may inherit objects itself/
  *
- * @tparam T
+ * @tparam T Type contained within this Inheritable
  */
 trait Inheritable[T] {
 
@@ -46,8 +46,9 @@ trait Inheritable[T] {
   def flatTree: Seq[T]
 
   /**
-   *
-   * @return
+   * 'Unwrap' the inheritable to get the object contained within. In the case of a single object,
+   * return Some(). If the object is a Sequence, or this method otherwise does not apply, return None.
+   * @return Some() if the object can be unwrapped, None otherwise.
    */
   def unapply: Option[T]
 
@@ -56,5 +57,8 @@ trait Inheritable[T] {
 object Inheritable {
   def apply[T](o: T): InheritableElement[T] = {
     new InheritableElement[T](o)
+  }
+  def apply[T](o: Seq[T]): InheritableSeq[T] = {
+    new InheritableSeq[T](o.map(Inheritable(_)))
   }
 }

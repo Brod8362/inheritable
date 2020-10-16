@@ -29,22 +29,38 @@ class InheritanceSpec extends AnyFlatSpec {
     assert(testa.trueSize == 2)
   }
   it should "report elements in the correct order after being added" in {
-    val test = new InheritableSeq[Int](Seq(Inheritable(1), Inheritable(2)))
+    val test = Inheritable(Seq(1, 2))
     assert(test.flatTree == Seq(1, 2))
   }
   it should "remove elements correctly" in {
-    val test = new InheritableSeq[Int](Seq(Inheritable(1), Inheritable(2), Inheritable(3)))
-    test.remove(1)
+    val one = Inheritable(1)
+    val two = Inheritable(2)
+    val three = Inheritable(3)
+    val test = new InheritableSeq(Seq(one, two, three))
+    assert(test.remove(1) == two)
     assert(test.flatTree == Seq(1, 3))
-    test.remove(1)
+    assert(test.remove(1) == three)
     assert(test.flatTree == Seq(1))
-    test.remove(0)
+    assert(test.remove(0) == one)
     assert(test.flatTree == Seq())
   }
+  it should "throw an exception when invalid indices are removed" in {
+    val test = Inheritable(Seq(1, 2, 3))
+    assertThrows[IndexOutOfBoundsException] {
+      test.remove(3)
+    }
+    assertThrows[IndexOutOfBoundsException] {
+      test.remove(-1)
+    }
+    assertThrows[IndexOutOfBoundsException] {
+      test.remove(Int.MaxValue)
+    }
+    test.remove(2)
+  }
   it should "correctly generate a toString" in {
-    val test = new InheritableSeq[Int](Seq(Inheritable(1), Inheritable(2), Inheritable(3)))
+    val test = Inheritable(Seq(1, 2, 3))
     assert(test.toString == "[1,2,3]")
-    val test2 = new InheritableSeq[Int](Seq(Inheritable(4)))
+    val test2 = Inheritable(Seq(4))
     test.append(test2)
     assert(test.toString == "[1,2,3,[4]]")
     test2.append(Inheritable(5))
@@ -54,7 +70,7 @@ class InheritanceSpec extends AnyFlatSpec {
   it should "correctly determine if an object inherits it" in {
     val four = Inheritable(4)
     val test = new InheritableSeq[Int](Seq(four, Inheritable(5)))
-    val test2 = new InheritableSeq[Int](Seq(Inheritable(1), Inheritable(2), Inheritable(3)))
+    val test2 = Inheritable(Seq(1, 2, 3))
     test2.append(test)
     assert(test2.directlyInherits(test))
     assert(test2.inherits(test))
@@ -72,16 +88,17 @@ class InheritanceSpec extends AnyFlatSpec {
     val one = Inheritable(1)
     val two = Inheritable(2)
     val three = Inheritable(3)
+    val four = Inheritable(4)
     val test = new InheritableSeq[Int](Seq(one, two))
-    val test2 = new InheritableSeq[Int](Seq(three, Inheritable(4)))
-    assert(test.flatTree==Seq(1,2))
-    assert(test2.flatTree==Seq(3,4))
+    val test2 = new InheritableSeq[Int](Seq(three, four))
+    assert(test.flatTree == Seq(1, 2))
+    assert(test2.flatTree == Seq(3, 4))
     test.append(test2)
-    assert(test.flatTree==Seq(1,2,3,4))
-    assert(test.inheritanceTree==Seq(one, two, test2))
-    test2.remove(1)
-    assert(test.inheritanceTree==Seq(one, two, test2))
-    assert(test.flatTree==Seq(1,2,3))
+    assert(test.flatTree == Seq(1, 2, 3, 4))
+    assert(test.inheritanceTree == Seq(one, two, test2))
+    assert(test2.remove(1) == four)
+    assert(test.inheritanceTree == Seq(one, two, test2))
+    assert(test.flatTree == Seq(1, 2, 3))
     assert(test.inherits(three))
   }
 }
