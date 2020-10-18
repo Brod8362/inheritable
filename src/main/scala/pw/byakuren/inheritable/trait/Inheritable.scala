@@ -15,11 +15,7 @@ trait Inheritable[T] {
    * @param o Object to check inheritance with.
    */
   def inherits(o: Inheritable[T]): Boolean = {
-    val ft = flatTree
-    directlyInherits(o) || flatTree.contains(o) || (o.unapply  match {
-      case Some(uw) => ft.contains(uw)
-      case _ => false
-    })
+    inheritanceTree.contains(o) || inheritanceTree.exists(_.inherits(o))
   }
 
   /**
@@ -39,19 +35,11 @@ trait Inheritable[T] {
   def inheritanceTree: Seq[Inheritable[T]]
 
   /**
-   * Flatten out the tree by calling inheritanceTree() recursively, until all that remains is a Sequence of T.
+   * Flatten out the tree, until all that remains is a Sequence of T.
    *
    * @return The flattened tree containing only a sequence of T.
    */
   def flatTree: Seq[T]
-
-  /**
-   * 'Unwrap' the inheritable to get the object contained within. In the case of a single object,
-   * return Some(). If the object is a Sequence, or this method otherwise does not apply, return None.
-   * @return Some() if the object can be unwrapped, None otherwise.
-   */
-  def unapply: Option[T]
-
 }
 
 object Inheritable {

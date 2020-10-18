@@ -1,7 +1,6 @@
 package pw.byakuren.inheritable.collections
 
 import pw.byakuren.inheritable.`trait`.Inheritable
-import pw.byakuren.inheritable.exceptions._
 
 class InheritableSeq[T](start: Seq[Inheritable[T]]) extends Inheritable[T] {
 
@@ -12,45 +11,16 @@ class InheritableSeq[T](start: Seq[Inheritable[T]]) extends Inheritable[T] {
   private var seq: Seq[Inheritable[T]] = start
 
   /**
-   * Get the sequence of items that this object inherits from. If this is a single item, it should return an empty sequence.
-   *
-   * @return The sequence of items, or an empty sequence.
+   * @inheritdoc
    */
   override def inheritanceTree: Seq[Inheritable[T]] = {
     seq
   }
 
   /**
-   * Flatten out the tree by calling inheritanceTree() recursively, until all that remains is a Seq[T].
-   *
-   * @return The flattened tree containing only a sequence of T.
+   * @inheritdoc
    */
-  override def flatTree: Seq[T] = {
-    var f: Seq[T] = Seq()
-    for (elem <- inheritanceTree) {
-      val e = elem.inheritanceTree
-      if (e.isEmpty) {
-        elem.unapply match {
-          case Some(g) => f++=Seq(g)
-          case None =>
-            //this case should not happen, it means the element is either a sequence (meaning it should go to the 'else'
-            //block just below this one) or that it is incorrectly implemented
-            throw new ImpossibleInheritanceException("element failed to unapply")
-        }
-      }
-      else f ++= elem.flatTree
-    }
-    f
-  }
-
-  /**
-   * 'Unwrap' the inheritable to get the object contained within. In the case of a single object,
-   * return Some(). If the object is a Sequence, or this method otherwise does not apply, return None.
-   * @return Some() if the object can be unwrapped, None otherwise.
-   */
-  override def unapply: Option[T] = {
-    None
-  }
+  override def flatTree: Seq[T] = inheritanceTree.flatMap(_.flatTree)
 
   /**
    * Append an item to the end of the Sequence.
